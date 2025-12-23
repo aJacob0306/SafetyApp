@@ -40,6 +40,40 @@ def has_unsaved_work():
         return True
 
 
+def check_teammate_updates():
+    """Check if there are updates available from the remote branch."""
+    try:
+        # Check if tracking branch exists
+        subprocess.run(
+            ["git", "rev-parse", "--abbrev-ref", "@{upstream}"],
+            capture_output=True,
+            check=True
+        )
+    except subprocess.CalledProcessError:
+        # No remote tracking branch set
+        print("No remote tracking branch set")
+        return
+    
+    try:
+        # Count commits behind remote
+        result = subprocess.run(
+            ["git", "rev-list", "--count", "HEAD..@{upstream}"],
+            capture_output=True,
+            text=True,
+            check=True
+        )
+        behind_count = int(result.stdout.strip())
+        
+        # Print status based on count
+        if behind_count > 0:
+            print("Teammate updates available: yes")
+        else:
+            print("Teammate updates available: no")
+    except (subprocess.CalledProcessError, ValueError):
+        # If counting fails, assume no updates available
+        print("Teammate updates available: no")
+
+
 def main():
     """Main function to run the safety check."""
     # Step 1: Check if we're in a git repository
@@ -55,6 +89,9 @@ def main():
     else:
         # No unsaved work - safe to pull
         print("Safe to get teammate updates")
+    
+    # Step 3: Check if teammate updates are available
+    check_teammate_updates()
 
 
 if __name__ == "__main__":

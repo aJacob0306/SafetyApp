@@ -54,6 +54,17 @@ def check_teammate_updates():
         print("No remote tracking branch set")
         return
     
+    # Fetch latest info from remote first
+    try:
+        subprocess.run(
+            ["git", "fetch"],
+            capture_output=True,
+            check=True
+        )
+    except subprocess.CalledProcessError:
+        # If fetch fails, continue anyway
+        pass
+    
     try:
         # Count commits behind remote
         result = subprocess.run(

@@ -186,3 +186,12 @@ def safe_save():
     
     # Step 8: Print success message
     print(f"Safety checkpoint created: {safety_branch}")
+def pre_pull(args: list[str]) -> int:
+    return main()
+
+def safe_save(args: list[str]) -> int:
+    return safe_save()
+def install(args: list[str]) -> int:
+    print("✅ Git safety installed for this repo")
+    print("To uninstall: remove .git/hooks/pre-rebase and .git/hooks/pre-merge-commit")
+    return 0
